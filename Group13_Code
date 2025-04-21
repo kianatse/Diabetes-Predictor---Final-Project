@@ -1,0 +1,161 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.inspection import permutation_importance
+
+
+def load_and_explore_data(file_path):
+    """
+    Load and explore the dataset.
+
+    Parameters:
+        file_path (str): Path to the dataset file.
+
+    Returns:
+        pd.DataFrame: Loaded dataset.
+    """
+    print("Loading dataset...")
+    data = pd.read_csv(file_path)
+    print("Dataset loaded successfully.\n")
+
+    print("Dataset Summary:")
+    print(data.info(), "\n")
+    print("Basic Statistics:")
+    print(data.describe(), "\n")
+    return data
+
+
+def preprocess_data(data, target_column):
+    """
+    Preprocess the dataset by handling missing values and scaling features.
+
+    Parameters:
+        data (pd.DataFrame): Dataset to preprocess.
+        target_column (str): Name of the target column.
+
+    Returns:
+        tuple: Preprocessed features (X) and target (y).
+    """
+    # Handle missing values (replace with mean)
+    data.fillna(data.mean(), inplace=True)
+
+    # Split features and target
+    X = data.drop(target_column, axis=1)
+    y = data[target_column]
+
+    # Scale features
+    scaler = StandardScaler()
+    X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+    return X, y
+
+
+def optimize_and_train_model(X_train, y_train):
+    """
+    Train and optimize a Random Forest model.
+
+    Parameters:
+        X_train (pd.DataFrame): Training features.
+        y_train (pd.Series): Training target.
+
+    Returns:
+        RandomForestClassifier: Trained model.
+    """
+    print("Optimizing and training model...")
+    param_grid = {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [None, 10, 20],
+        "min_samples_split": [2, 5, 10],
+    }
+    grid_search = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=3, scoring="accuracy")
+    grid_search.fit(X_train, y_train)
+    print("Best Parameters:", grid_search.best_params_)
+    print("Model training completed.\n")
+    return grid_search.best_estimator_
+
+
+def evaluate_model(model, X_test, y_test):
+    """
+    Evaluate the trained model.
+
+    Parameters:
+        model (RandomForestClassifier): Trained model.
+        X_test (pd.DataFrame): Testing features.
+        y_test (pd.Series): Testing target.
+    """
+    print("Evaluating model...")
+    y_pred = model.predict(X_test)
+    print("Classification Report:")
+    print(classification_report(y_test, y_pred))
+
+    # Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred)
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+    plt.title("Confusion Matrix")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+
+    # Feature Importance
+    importance = model.feature_importances_
+    feature_names = X_test.columns
+    plt.barh(feature_names, importance)
+    plt.title("Feature Importance")
+    plt.show()
+
+
+def predict_and_explain(model, patient_data, feature_names):
+    """
+    Predict diabetes risk and explain the prediction.
+
+    Parameters:
+        model (RandomForestClassifier): Trained model.
+        patient_data (dict): Patient data for prediction.
+        feature_names (list): List of feature names.
+
+    Returns:
+        str: Prediction result ("High Risk" or "Low Risk").
+    """
+    patient_df = pd.DataFrame([patient_data])
+    prediction = model.predict(patient_df)[0]
+
+    # Explain Prediction
+    importance = permutation_importance(model, patient_df, [prediction], random_state=42)
+    print("Feature Importance for Prediction:")
+    for name, imp in zip(feature_names, importance.importances_mean):
+        print(f"{name}: {imp:.4f}")
+
+    return "High Risk" if prediction == 1 else "Low Risk"
+
+
+if __name__ == "__main__":
+    # Load and explore the dataset
+    data = load_and_explore_data("Group13_Data.csv")  # Replace with your dataset file name
+
+    # Preprocess the data
+    X, y = preprocess_data(data, target_column="target")  # Replace "target" with actual target column name
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Train and optimize the model
+    model = optimize_and_train_model(X_train, y_train)
+
+    # Evaluate the model
+    evaluate_model(model, X_test, y_test)
+
+    # Example patient data for prediction
+    patient_data = {
+        "Glucose": 120,
+        "BloodPressure": 80,
+        "SkinThickness": 35,
+        "Insulin": 90,
+        "BMI": 30.5,
+        "DiabetesPedigreeFunction": 0.5,
+        "Age": 45,
+    }
+    print("Predicting diabetes risk for a new patient...")
+    risk = predict_and_explain(model, patient_data, feature_names=X.columns)
+    print(f"Diabetes Risk Assessment: {risk}")
