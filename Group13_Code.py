@@ -72,7 +72,7 @@ def preprocess_data(data):
         'HvyAlcoholConsump', 'AnyHealthcare', 'NoDocbcCost', 'GenHlth',
         'MentHlth', 'PhysHlth', 'DiffWalk', 'Sex', 'Age', 'Education'
     ]
-    target = 'Diabetes_012'
+    target = 'Diabetes_binary'
 
     # Check for missing columns
     missing_features = [f for f in features if f not in data.columns]
