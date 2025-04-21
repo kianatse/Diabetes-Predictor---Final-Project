@@ -1,0 +1,64 @@
+import pandas as pd
+import zipfile
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import pickle
+import os
+
+# Step 1: Extract the ZIP file
+# Assumes the ZIP file is located in the 'dataset' directory with the name 'Group13_data.zip'
+zip_path = 'dataset/Group13_data.zip'
+extract_to = 'dataset/'  # Extract files in the 'dataset' folder
+
+# Check if the ZIP file exists
+if os.path.exists(zip_path):
+    # Unzip the file
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+    print(f"Extracted {zip_path} to {extract_to}")
+else:
+    print(f"Error: {zip_path} does not exist. Please ensure the file is in the 'dataset' folder.")
+    exit()
+
+# Step 2: Load the dataset
+# Assumes the extracted file is named 'Group13_data.csv' after unzipping
+csv_path = os.path.join(extract_to, 'Group13_data.csv')
+if not os.path.exists(csv_path):
+    print(f"Error: {csv_path} does not exist after extraction. Please check the ZIP contents.")
+    exit()
+
+# Load the dataset into a Pandas DataFrame
+data = pd.read_csv(csv_path)
+
+# Step 3: Data Preparation
+# Separate the features (X) and the target variable (y)
+# Assumes the target column is named 'Diabetes'
+X = data.drop('Diabetes', axis=1)  # Features
+y = data['Diabetes']              # Target
+
+# Step 4: Split the dataset into training and testing sets
+# 70% of the data will be used for training and 30% for testing
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Step 5: Train a Random Forest Classifier
+# Random Forest is chosen as the machine learning model for classification
+model = RandomForestClassifier(random_state=42)  # Initialize the model
+model.fit(X_train, y_train)  # Train the model with the training data
+
+# Step 6: Make predictions
+# Use the trained model to predict the outcomes for the test data
+y_pred = model.predict(X_test)
+
+# Step 7: Evaluate the model
+# Calculate the accuracy of the model's predictions
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Model Accuracy: {accuracy * 100:.2f}%")  # Print model accuracy as a percentage
+
+# Step 8: Save the trained model
+# Save the trained model as a .pkl file so it can be reused without retraining
+model_file_path = 'diabetes_model.pkl'
+with open(model_file_path, 'wb') as model_file:
+    pickle.dump(model, model_file)
+
+print(f"Model training complete. You can now use '{model_file_path}' for predictions.")
