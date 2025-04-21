@@ -7,8 +7,8 @@ import pickle
 import os
 
 # Step 1: Extract the ZIP file
-# Assumes the ZIP file is located in the 'dataset' directory with the name 'Group13_data.zip'
-zip_path = 'dataset/Group13_data.zip'
+# Assumes the ZIP file is located in the 'dataset' directory with the name 'Group13_Data.zip'
+zip_path = 'dataset/Group13_Data.zip'
 extract_to = 'dataset/'  # Extract files in the 'dataset' folder
 
 # Check if the ZIP file exists
