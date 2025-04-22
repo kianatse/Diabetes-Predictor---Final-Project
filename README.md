@@ -49,7 +49,7 @@ Follow these steps to clone the repository to your local environment:
      mv /path/to/Group13_Data.zip /path/to/Diabetes-Predictor---Final-Project/
      ```
 
-   2.1 Verify the dataset is now in the root directory:
+   2.1.) Verify the dataset is now in the root directory:
       ```bash
       ls
       ```
