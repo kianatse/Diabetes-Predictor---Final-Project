@@ -5,7 +5,7 @@ Our project’s goal is to create a simple biomedical model of diabetes risk ass
 ---
 
 ## **Dataset**
-The dataset used for training the model is bundled as a `.zip` file (`Group13_Data.zip`) in the repository. It includes health-related attributes and a binary target variable (`Diabetes_binary`) indicating the presence of diabetes. 
+The dataset used for training the model is bundled as a `.zip` file (`Group13_Data.zip`) in the repository. This dataset was chosen because of the many indicators it had included, allowing our model to be much more all-inclusive and efficient. It includes health-related attributes and a binary target variable (`Diabetes_binary`) indicating the presence of diabetes. 
 
 **Dataset Source**: (https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset)
 
