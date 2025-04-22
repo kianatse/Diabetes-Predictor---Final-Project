@@ -75,6 +75,7 @@ python Group13_Code.py
 ### **6. Follow the Interactive Demo**
 The script includes a demo where you can input health-related values to get predictions:
 - Enter the feature values when prompted.
+- All except the following will be answered with binary values '1' for yes, '0' for no: BMI and Age
 - The script will output whether the prediction is `Diabetes` or `No Diabetes`.
 
 ---
