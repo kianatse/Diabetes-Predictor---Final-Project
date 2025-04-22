@@ -7,7 +7,12 @@ This project predicts whether a person is likely to have diabetes based on healt
 ## **Dataset**
 The dataset used for training the model is bundled as a `.zip` file (`Group13_Data.zip`) in the repository. It includes health-related attributes and a binary target variable (`Diabetes_binary`) indicating the presence of diabetes.
 
-**Dataset Source**: https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset
+**Dataset Source**: [Placeholder for Dataset URL or Description]
+
+---
+
+## **Model**
+The trained model is saved as a compressed file: `diabetes_model.pkl.gz`. This file will be generated when the script is run, or you can download a pre-trained version if provided.
 
 ---
 
@@ -67,7 +72,7 @@ pip install -r requirements.txt
 ### **5. Run the Script**
 Run the Python script to train the model, evaluate it, and start the prediction demo:
 ```bash
-python diabetes_model.py
+python Group13_Code.py
 ```
 
 ---
@@ -76,6 +81,11 @@ python diabetes_model.py
 The script includes a demo where you can input health-related values to get predictions:
 - Enter the feature values when prompted.
 - The script will output whether the prediction is `Diabetes` or `No Diabetes`.
+
+---
+
+### **7. Check the Generated Model File**
+After running the script, the trained model will be saved as `diabetes_model.pkl.gz` in the repository directory. You can use this file for inference in future runs without retraining.
 
 ---
 
@@ -114,5 +124,8 @@ The script includes a demo where you can input health-related values to get pred
    - Features and the target variable are selected, and optional feature selection is applied.
 3. **Model Training**:
    - A Random Forest Classifier is trained on the dataset.
-4. **Interactive Demo**:
+4. **Model Saving**:
+   - The trained model is saved as a compressed `.pkl.gz` file.
+5. **Interactive Demo**:
    - Users can input feature values to predict if diabetes is likely.
+
