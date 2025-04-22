@@ -1,11 +1,11 @@
 # Diabetes Prediction Model
 
-This project predicts whether a person is likely to have diabetes based on health-related attributes using a Random Forest Classifier.
+Our project’s goal is to create a simple biomedical model of diabetes risk assessment. Diabetes is a widespread, chronic disease that affects about 12% of the US adult population. It may lead to serious consequences if not treated or detected early. The model will predict the likelihood of a patient having or developing the condition, based on the datasets found on heart disease, diabetes health indicators, glucose levels, etc. With this information, patients can initiate lifestyle changes to improve their conditions. With this model, we aim to be more proactive and preventative concerning the spread of diabetes. This project predicts whether a person is likely to have diabetes based on health-related attributes using a Random Forest Classifier.
 
 ---
 
 ## **Dataset**
-The dataset used for training the model is bundled as a `.zip` file (`Group13_Data.zip`) in the repository. It includes health-related attributes and a binary target variable (`Diabetes_binary`) indicating the presence of diabetes.
+The dataset used for training the model is bundled as a `.zip` file (`Group13_Data.zip`) in the repository. It includes health-related attributes and a binary target variable (`Diabetes_binary`) indicating the presence of diabetes. 
 
 **Dataset Source**: (https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset)
 
