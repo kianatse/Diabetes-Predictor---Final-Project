@@ -2,8 +2,10 @@ import pandas as pd
 import zipfile
 import os
 import joblib
+import gzip
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import accuracy_score
 import warnings
 
@@ -55,12 +57,13 @@ def load_data(file_path):
     return data
 
 # Function to preprocess the dataset
-def preprocess_data(data):
+def preprocess_data(data, feature_selection=False):
     """
     Preprocesses the dataset for model training.
     
     Parameters:
         data (pd.DataFrame): The dataset.
+        feature_selection (bool): Whether to apply feature selection.
     
     Returns:
         tuple: Features (X) and target (y) for training.
@@ -87,13 +90,22 @@ def preprocess_data(data):
     X = data[features]
     y = data[target]
 
-    print(f"Preprocessed dataset with {len(features)} features.")
+    # Apply feature selection if enabled
+    if feature_selection:
+        print("Applying feature selection...")
+        selector = SelectFromModel(RandomForestClassifier(random_state=42), threshold='mean')
+        selector.fit(X, y)
+        selected_features = selector.get_support(indices=True)
+        X = X.iloc[:, selected_features]
+        print(f"Selected features: {X.columns.tolist()}")
+
+    print(f"Preprocessed dataset with {X.shape[1]} features.")
     return X, y
 
 # Function to train and evaluate the model
-def train_model(X, y, model_path="diabetes_model.pkl"):
+def train_model(X, y, model_path="diabetes_model.pkl.gz"):
     """
-    Trains and evaluates a Random Forest Classifier and saves the model to a file.
+    Trains and evaluates a Random Forest Classifier and saves the model in a compressed format.
     
     Parameters:
         X (pd.DataFrame): Feature set.
@@ -107,7 +119,7 @@ def train_model(X, y, model_path="diabetes_model.pkl"):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     print("Training the Random Forest model...")
-    model = RandomForestClassifier(random_state=42)
+    model = RandomForestClassifier(n_estimators=50, random_state=42)  # Reduced number of trees
     model.fit(X_train, y_train)
 
     # Make predictions and evaluate the model
@@ -115,16 +127,17 @@ def train_model(X, y, model_path="diabetes_model.pkl"):
     accuracy = accuracy_score(y_test, y_pred)
     print(f"Model Accuracy: {accuracy:.2f}")
 
-    # Save the model to a file
-    joblib.dump(model, model_path)
-    print(f"Trained model saved to {model_path}.")
+    # Save the model in a compressed format
+    with gzip.GzipFile(model_path, 'wb') as f:
+        joblib.dump(model, f)
 
+    print(f"Trained model saved to {model_path} (compressed).")
     return model
 
 # Function to load a saved model
 def load_model(model_path):
     """
-    Loads a trained model from a file.
+    Loads a trained model from a compressed file.
     
     Parameters:
         model_path (str): Path to the saved model file.
@@ -136,7 +149,9 @@ def load_model(model_path):
         raise FileNotFoundError(f"The model file '{model_path}' does not exist.")
     
     print(f"Loading model from {model_path}...")
-    model = joblib.load(model_path)
+    with gzip.GzipFile(model_path, 'rb') as f:
+        model = joblib.load(f)
+
     print("Model loaded successfully.")
     return model
 
@@ -174,7 +189,7 @@ if __name__ == "__main__":
 
     # Define the path to the .zip file and the model file
     zip_file_path = "Group13_Data.zip"
-    model_file_path = "diabetes_model.pkl"
+    model_file_path = "diabetes_model.pkl.gz"
     
     try:
         # Extract and load the dataset
@@ -182,7 +197,7 @@ if __name__ == "__main__":
         data = load_data(csv_file_path)
 
         # Preprocess the data
-        X, y = preprocess_data(data)
+        X, y = preprocess_data(data, feature_selection=True)
 
         # Train the model if it doesn't already exist
         if not os.path.exists(model_file_path):
